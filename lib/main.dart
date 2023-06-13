@@ -100,7 +100,7 @@ class _HomePageState extends State<HomePage>
                     return Text(
                       'Weather in your city',
                       style: TextStyle(
-                        fontSize: 50,
+                        fontSize: 49,
                         fontWeight: FontWeight.bold,
                         color: _colorAnimation.value,
                         shadows: [
