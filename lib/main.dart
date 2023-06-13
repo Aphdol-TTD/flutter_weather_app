@@ -9,8 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
-
-void main()async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await weatherdb.initDb();
   runApp(MyApp());
@@ -29,24 +28,26 @@ class MyApp extends StatelessWidget {
       home: HomePage(),
       routes: {
         '/login': (context) => LoginPage(),
-        '/profile': (context) => ProfilePage(user: user,),
+        '/profile': (context) => ProfilePage(
+              user: user,
+            ),
       },
     );
   }
 }
 
 class HomePage extends StatefulWidget {
-
   HomePage();
 
   @override
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
-   final TextEditingController searchController = TextEditingController();
-    Weather weatherInfo=Weather();
-    void searchWeather() {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
+  final TextEditingController searchController = TextEditingController();
+  Weather weatherInfo = Weather();
+  void searchWeather() {
     String city = searchController.text;
     // Appeler l'API pour obtenir les informations météorologiques de la ville
     // Mettre à jour la variable weatherInfo avec les données récupérées
@@ -63,7 +64,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       vsync: this,
       duration: Duration(seconds: 1),
     )..repeat(reverse: true);
-    _colorAnimation = ColorTween(begin: Colors.white, end: Color.fromARGB(255, 51, 122, 245)).animate(_controller);
+    _colorAnimation =
+        ColorTween(begin: Colors.white, end: Color.fromARGB(255, 51, 122, 245))
+            .animate(_controller);
   }
 
   @override
@@ -78,16 +81,15 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       appBar: AppBar(
         title: Text('ACCUEIL'),
       ),
-      body:
-      Stack(
-          children: [
-            Positioned.fill(
+      body: Stack(
+        children: [
+          Positioned.fill(
             child: Image.asset(
               'assets/cielBlue.webp',
               fit: BoxFit.cover,
             ),
           ),
-         // Image.asset('cielBlue.webp'), // Remplacez 'path_to_image' par le chemin de votre image d'accueil
+          // Image.asset('cielBlue.webp'), // Remplacez 'path_to_image' par le chemin de votre image d'accueil
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -96,7 +98,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                   animation: _colorAnimation,
                   builder: (context, child) {
                     return Text(
-                      ' Weather in your city',
+                      'Weather in your city',
                       style: TextStyle(
                         fontSize: 50,
                         fontWeight: FontWeight.bold,
@@ -109,155 +111,167 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                           ),
                         ],
                       ),
+                      textAlign:
+                          TextAlign.center, // Aligns the text to the center
                     );
                   },
                 ),
                 SizedBox(height: 16.0),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      //cursorColor: Colors.black,
-                      controller: searchController,
-                      decoration: InputDecoration(
-                        labelText: 'Search by city',
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          //cursorColor: Colors.black,
+                          controller: searchController,
+                          decoration: InputDecoration(
+                            labelText: 'Search by city',
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  SizedBox(width: 16.0),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Récupérer la valeur de la barre de recherche
-                      String searchValue = searchController.text;
+                      SizedBox(width: 16.0),
+                      ElevatedButton(
+                        onPressed: () {
+                          // Récupérer la valeur de la barre de recherche
+                          String searchValue = searchController.text;
 
-                      // Afficher la valeur dans la console
-                      print('Recherche: $searchValue');
+                          // Afficher la valeur dans la console
+                          print('Recherche: $searchValue');
 
-                      // Appeler la méthode de recherche appropriée avec la valeur
-                      WeatherApiClient().fetchWeatherData(searchValue).then((weatherData) {
-                        // Traiter les données de la météo récupérées ici
-                        setState(() {
-                          weatherInfo = weatherData;
-                        });
-                        // Vous pouvez accéder aux informations météorologiques comme weatherData.description, weatherData.temp, etc.
-                      });
-                    },
-                    child: Text('search'),
+                          // Appeler la méthode de recherche appropriée avec la valeur
+                          WeatherApiClient()
+                              .fetchWeatherData(searchValue)
+                              .then((weatherData) {
+                            // Traiter les données de la météo récupérées ici
+                            setState(() {
+                              weatherInfo = weatherData;
+                            });
+                            // Vous pouvez accéder aux informations météorologiques comme weatherData.description, weatherData.temp, etc.
+                          });
+                        },
+                        child: Text('search'),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-            SizedBox(height: 16.0),
-               Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(height: 16.0),
-                    Text(
-                      'Description: ${weatherInfo!.description}',
-                      style: TextStyle(fontSize: 24.0),
-                    ),
-                    SizedBox(height: 16.0),
-                    Text(
-                      'Wind: ${weatherInfo!.wind} m/s',
-                      style: TextStyle(fontSize: 24.0),
-                    ),
-                    SizedBox(height: 16.0),
-                    Text(
-                      'Temperature: ${weatherInfo!.temp}°C',
-                      style: TextStyle(fontSize: 24.0),
-                    ),
-                    SizedBox(height: 16.0),
-                    Text(
-                      'Clouds: ${weatherInfo!.clouds}%',
-                      style: TextStyle(fontSize: 24.0),
-                    ),
-                    SizedBox(height: 16.0),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Column(
-                          children: [
-                            Text(
-                              'Low',
-                              style: TextStyle(fontSize: 20.0),
-                            ),
-                            Text(
-                              '${weatherInfo!.low}°C',
-                              style: TextStyle(fontSize: 24.0),
-                            ),
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            Text(
-                              'High',
-                              style: TextStyle(fontSize: 20.0),
-                            ),
-                            Text(
-                              '${weatherInfo!.high}°C',
-                              style: TextStyle(fontSize: 24.0),
-                            ),
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            Text(
-                              'Feels Like',
-                              style: TextStyle(fontSize: 20.0),
-                            ),
-                            Text(
-                              '${weatherInfo!.feelsLike}°C',
-                              style: TextStyle(fontSize: 24.0),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
                 ),
-              ),
-
+                SizedBox(height: 16.0),
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(height: 16.0),
+                      Text(
+                        'Description: ${weatherInfo!.description}',
+                        style: TextStyle(fontSize: 24.0),
+                      ),
+                      SizedBox(height: 16.0),
+                      Text(
+                        'Wind: ${weatherInfo!.wind} m/s',
+                        style: TextStyle(fontSize: 24.0),
+                      ),
+                      SizedBox(height: 16.0),
+                      Text(
+                        'Temperature: ${weatherInfo!.temp}°C',
+                        style: TextStyle(fontSize: 24.0),
+                      ),
+                      SizedBox(height: 16.0),
+                      Text(
+                        'Clouds: ${weatherInfo!.clouds}%',
+                        style: TextStyle(fontSize: 24.0),
+                      ),
+                      SizedBox(height: 16.0),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Column(
+                            children: [
+                              Text(
+                                'Low',
+                                style: TextStyle(fontSize: 20.0),
+                              ),
+                              Text(
+                                '${weatherInfo!.low}°C',
+                                style: TextStyle(fontSize: 24.0),
+                              ),
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              Text(
+                                'High',
+                                style: TextStyle(fontSize: 20.0),
+                              ),
+                              Text(
+                                '${weatherInfo!.high}°C',
+                                style: TextStyle(fontSize: 24.0),
+                              ),
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              Text(
+                                'Feels Like',
+                                style: TextStyle(fontSize: 20.0),
+                              ),
+                              Text(
+                                '${weatherInfo!.feelsLike}°C',
+                                style: TextStyle(fontSize: 24.0),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
         ],
       ),
-      
       drawer: Drawer(
-        child: ListView(
-          children: <Widget>[
-            ListTile(
-              title: Text('Accueil'),
-              onTap: () {
-                Navigator.pushNamed(context, '/');
-              },
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [ Colors.white,Colors.blue],
             ),
-            ListTile(
-              title: Text('Profil'),
-              onTap: () {
-                User user = User('John Doe', 'johndoe@example.com'); // Remplacez ces valeurs par celles de l'utilisateur actuel
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ProfilePage(user: user)),
-                );
-              },
-            ),
-            ListTile(
-              title: Text('Login'),
-              onTap: () {
-                Navigator.pushNamed(context, '/login');
-              },
-            ),
-          ],
+          ),
+          child: ListView(
+            children: <Widget>[
+              ListTile(
+                title: Text('Accueil'),
+                onTap: () {
+                  Navigator.pushNamed(context, '/');
+                },
+              ),
+              ListTile(
+                title: Text('Profil'),
+                onTap: () {
+                  User user = User('John Doe',
+                      'johndoe@example.com'); // Remplacez ces valeurs par celles de l'utilisateur actuel
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ProfilePage(user: user)),
+                  );
+                },
+              ),
+              ListTile(
+                title: Text('Login'),
+                onTap: () {
+                  Navigator.pushNamed(context, '/login');
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
-
 
 class LoginPage extends StatefulWidget {
   @override
@@ -268,6 +282,7 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _isObscure = true; // Variable pour contrôler l'affichage du mot de passe
 
   @override
   void dispose() {
@@ -300,6 +315,7 @@ class _LoginPageState extends State<LoginPage> {
                 controller: _emailController,
                 decoration: InputDecoration(
                   labelText: 'Email',
+                  prefixIcon: Icon(Icons.email),
                 ),
                 validator: (value) {
                   if (value!.isEmpty) {
@@ -313,8 +329,20 @@ class _LoginPageState extends State<LoginPage> {
                 controller: _passwordController,
                 decoration: InputDecoration(
                   labelText: 'Mot de passe',
+                  prefixIcon: Icon(Icons.lock),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                        _isObscure ? Icons.visibility : Icons.visibility_off),
+                    onPressed: () {
+                      setState(() {
+                        _isObscure =
+                            !_isObscure; // Inverse la valeur du booléen
+                      });
+                    },
+                  ),
                 ),
-                obscureText: true,
+                obscureText:
+                    _isObscure, // Utilise la valeur du booléen pour masquer ou afficher le mot de passe
                 validator: (value) {
                   if (value!.isEmpty) {
                     return 'Veuillez entrer votre mot de passe';
@@ -347,10 +375,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
-
 class SignUpPage extends StatefulWidget {
-
-
   @override
   _SignUpPageState createState() => _SignUpPageState();
 }
@@ -363,25 +388,25 @@ class _SignUpPageState extends State<SignUpPage> {
 
   File? _profileImage;
 
-    void _pickProfileImage() async {
-      final imagePicker = ImagePicker();
-      final pickedImage = await imagePicker.pickImage(source: ImageSource.gallery);
+  void _pickProfileImage() async {
+    final imagePicker = ImagePicker();
+    final pickedImage =
+        await imagePicker.pickImage(source: ImageSource.gallery);
 
-      if (pickedImage != null) {
-        setState(() {
-          _profileImage = File(pickedImage.path);
-        });
-      }
+    if (pickedImage != null) {
+      setState(() {
+        _profileImage = File(pickedImage.path);
+      });
     }
+  }
 
-    bool _obscurePassword = true;
+  bool _obscurePassword = true;
 
-    @override
-    void initState() {
-      super.initState();
-      _obscurePassword = true;
-    }
-
+  @override
+  void initState() {
+    super.initState();
+    _obscurePassword = true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -397,15 +422,19 @@ class _SignUpPageState extends State<SignUpPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               GestureDetector(
-                  onTap: () {
-                    _pickProfileImage();
-                  },
-                  child: Column(
+                onTap: () {
+                  _pickProfileImage();
+                },
+                child: Column(
                   children: [
                     CircleAvatar(
                       radius: 50.0,
-                      backgroundImage: _profileImage != null ? FileImage(_profileImage!) : null,
-                      child: _profileImage == null ? Icon(Icons.camera_alt, size: 50.0) : null,
+                      backgroundImage: _profileImage != null
+                          ? FileImage(_profileImage!)
+                          : null,
+                      child: _profileImage == null
+                          ? Icon(Icons.camera_alt, size: 50.0)
+                          : null,
                     ),
                     SizedBox(height: 8.0),
                     Text(
@@ -415,11 +444,11 @@ class _SignUpPageState extends State<SignUpPage> {
                   ],
                 ),
               ),
-
               TextFormField(
                 controller: _usernameController,
                 decoration: InputDecoration(
                   labelText: 'Nom d\'utilisateur',
+                  prefixIcon: Icon(Icons.person),
                 ),
                 validator: (value) {
                   if (value!.isEmpty) {
@@ -428,12 +457,12 @@ class _SignUpPageState extends State<SignUpPage> {
                   return null;
                 },
               ),
-
               SizedBox(height: 16.0),
               TextFormField(
                 controller: _emailController,
                 decoration: InputDecoration(
                   labelText: 'Email',
+                  prefixIcon: Icon(Icons.email),
                 ),
                 validator: (value) {
                   if (value!.isEmpty) {
@@ -444,52 +473,54 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
               SizedBox(height: 16.0),
               TextFormField(
-              controller: _passwordController,
-              decoration: InputDecoration(
-                labelText: 'Mot de passe',
-                suffixIcon: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _obscurePassword = !_obscurePassword;
-                    });
-                  },
-                  child: Icon(
-                    _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                controller: _passwordController,
+                decoration: InputDecoration(
+                  labelText: 'Mot de passe',
+                  prefixIcon: Icon(Icons.lock),
+                  suffixIcon: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                    child: Icon(
+                      _obscurePassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                    ),
                   ),
                 ),
+                obscureText: _obscurePassword,
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Veuillez entrer votre mot de passe';
+                  }
+                  return null;
+                },
               ),
-              obscureText: _obscurePassword,
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return 'Veuillez entrer votre mot de passe';
-                }
-                return null;
-              },
-            ),
-
               SizedBox(height: 24.0),
               ElevatedButton(
                 onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  // Validation réussie, traitez les données du formulaire ici
-                  String username = _usernameController.text ;
-                  String email = _emailController.text;
-                  String password = _passwordController.text ;
-                  // Ajoutez votre logique d'inscription ici
-                  weatherdb().createData( data: {
-                    "id": DateTime.now().microsecondsSinceEpoch,
-                    "username":username,
-                    "email":email,
-                    "password":password
-                  });
-                  
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Enregistré avec succès")));
-                  Future.delayed(Duration(seconds: 5), (){
-                    weatherdb().getLastEntry();
-                  });
-                 }
-              },
+                  if (_formKey.currentState!.validate()) {
+                    // Validation réussie, traitez les données du formulaire ici
+                    String username = _usernameController.text;
+                    String email = _emailController.text;
+                    String password = _passwordController.text;
+                    // Ajoutez votre logique d'inscription ici
+                    weatherdb().createData(data: {
+                      "id": DateTime.now().microsecondsSinceEpoch,
+                      "username": username,
+                      "email": email,
+                      "password": password
+                    });
 
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Enregistré avec succès")));
+                    Future.delayed(Duration(seconds: 5), () {
+                      weatherdb().getLastEntry();
+                    });
+                  }
+                },
                 child: Text('S\'inscrire'),
               ),
             ],
@@ -503,7 +534,6 @@ class _SignUpPageState extends State<SignUpPage> {
 class ProfilePage extends StatefulWidget {
   final User user;
 
-
   ProfilePage({required this.user});
 
   @override
@@ -513,16 +543,17 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   File? _profileImage;
 
-    void _pickProfileImage() async {
-      final imagePicker = ImagePicker();
-      final pickedImage = await imagePicker.pickImage(source: ImageSource.gallery);
+  void _pickProfileImage() async {
+    final imagePicker = ImagePicker();
+    final pickedImage =
+        await imagePicker.pickImage(source: ImageSource.gallery);
 
-      if (pickedImage != null) {
-        setState(() {
-          _profileImage = File(pickedImage.path);
-        });
-      }
+    if (pickedImage != null) {
+      setState(() {
+        _profileImage = File(pickedImage.path);
+      });
     }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -534,65 +565,67 @@ class _ProfilePageState extends State<ProfilePage> {
         child: Padding(
           padding: EdgeInsets.all(16.0),
           child: FutureBuilder(
-            future: weatherdb().getLastEntry(),
-            builder: (context, snapshot) {
-            if(snapshot.hasData){
-              var user = snapshot.data  as Map;
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                    GestureDetector(
-                    onTap: () {
-                      _pickProfileImage();
-                    },
-                    child: Column(
+              future: weatherdb().getLastEntry(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  var user = snapshot.data as Map;
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      CircleAvatar(
-                        radius: 50.0,
-                        backgroundImage: _profileImage != null ? FileImage(_profileImage!) : null,
-                        child: _profileImage == null ? Icon(Icons.camera_alt, size: 50.0) : null,
+                      GestureDetector(
+                        onTap: () {
+                          _pickProfileImage();
+                        },
+                        child: Column(
+                          children: [
+                            CircleAvatar(
+                              radius: 50.0,
+                              backgroundImage: _profileImage != null
+                                  ? FileImage(_profileImage!)
+                                  : null,
+                              child: _profileImage == null
+                                  ? Icon(Icons.camera_alt, size: 50.0)
+                                  : null,
+                            ),
+                            SizedBox(height: 8.0),
+                            Text(
+                              'Ajouter votre photo',
+                              style: TextStyle(fontSize: 16.0),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 16.0),
+                      Text(
+                        'Nom d\'utilisateur:',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        user['username'],
+                        style: TextStyle(fontSize: 16),
                       ),
                       SizedBox(height: 8.0),
                       Text(
-                        'Ajouter votre photo',
-                        style: TextStyle(fontSize: 16.0),
+                        'Email:',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        user['email'],
+                        style: TextStyle(fontSize: 16),
                       ),
                     ],
-                  ),
-                ),
-                  SizedBox(height: 16.0),
-                  Text(
-                    'Nom d\'utilisateur:',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    user['username'],
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  SizedBox(height: 8.0),
-                  Text(
-                    'Email:',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    user['email'],
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ],
-              );
-            }else{
-              return CircularProgressIndicator();
-            }
-            }
-          ),
+                  );
+                } else {
+                  return CircularProgressIndicator();
+                }
+              }),
         ),
       ),
     );
   }
 }
-
-
-
 
 class User {
   final String username;
@@ -600,4 +633,3 @@ class User {
 
   User(this.username, this.email);
 }
-
